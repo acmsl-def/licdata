@@ -60,8 +60,8 @@
       let
         org = "acmsl";
         repo = "licdata";
-        version = "0.0.3";
-        sha256 = "sha256-8qr6LSMpQZ8MJmxE1s5xQvPNTGmWkAbJ3hRkYQ9vpgo=";
+        version = "0.0.4";
+        sha256 = "05w2r0fzi5fd0h5imjrckd1f390r0kbznaldw3md3r0gdgcwfx4h";
         pname = "${org}-${repo}";
         pythonpackage = "org.acmsl.licdata";
         package = builtins.replaceStrings [ "." ] [ "/" ] pythonpackage;
@@ -201,7 +201,6 @@
               cp dist/${wheelName} /build/$sourceRoot/rest.zip $out/dist
               cp /build/$sourceRoot/entrypoint.sh $out/bin/${entrypoint}.sh
               chmod +x $out/bin/${entrypoint}.sh
-              cp -r /build/$sourceRoot/templates $out/lib/python${pythonMajorMinorVersion}/site-packages
               echo '#!/usr/bin/env sh' > $out/bin/banner.sh
               echo "export PYTHONPATH=$PYTHONPATH" >> $out/bin/banner.sh
               echo "echo 'Running $out/bin/banner'" >> $out/bin/banner.sh
