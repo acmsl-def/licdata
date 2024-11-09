@@ -21,6 +21,15 @@
   inputs = rec {
     nixos.url = "github:NixOS/nixpkgs/24.05";
     flake-utils.url = "github:numtide/flake-utils/v1.0.0";
+    azure-functions = {
+      inputs.nixos.follows = "nixos";
+      inputs.flake-utils.follows = "flake-utils";
+      inputs.pythoneda-shared-pythonlang-banner.follows =
+        "pythoneda-shared-pythonlang-banner";
+      inputs.pythoneda-shared-pythonlang-domain.follows =
+        "pythoneda-shared-pythonlang-domain";
+      url = "github:rydnr/nix-flakes/azure-functions-1.21.3?dir=azure-functions";
+    };
     pythoneda-shared-pythonlang-banner = {
       inputs.nixos.follows = "nixos";
       inputs.flake-utils.follows = "flake-utils";
@@ -78,7 +87,7 @@
         nixpkgsRelease =
           builtins.replaceStrings [ "\n" ] [ "" ] "nixos-${nixosVersion}";
         shared = import "${pythoneda-shared-pythonlang-banner}/nix/shared.nix";
-        licdata-for = { python
+        licdata-for = { azure-functions, python
           , pythoneda-shared-pythonlang-banner
           , pythoneda-shared-pythonlang-domain
           , pythoneda-shared-pythonlang-infrastructure
@@ -101,10 +110,14 @@
             pyprojectTemplate = pkgs.substituteAll {
               authors = builtins.concatStringsSep ","
                 (map (item: ''"${item}"'') maintainers);
+              azureFunctions = azure-functions.version;
+              cryptography = python.pkgs.cryptography.version;
               desc = description;
+              # emails = python.pkgs.emails.version;
               inherit homepage pname pythonMajorMinorVersion pythonpackage
                 version;
               package = builtins.replaceStrings [ "." ] [ "/" ] pythonpackage;
+              pygithub = python.pkgs.pygithub.version;
               pythonedaSharedPythonlangBanner =
                 pythoneda-shared-pythonlang-banner.version;
               pythonedaSharedPythonlangDomain =
@@ -154,12 +167,15 @@
 
             nativeBuildInputs = with python.pkgs; [ pip poetry-core ] ++ [ pkgs.zip ];
             propagatedBuildInputs = with python.pkgs; [
+              azure-functions
+              cryptography
+              # emails
+              PyGithub
               pythoneda-shared-pythonlang-banner
               pythoneda-shared-pythonlang-domain
               pythoneda-shared-pythonlang-infrastructure
               pythoneda-shared-pythonlang-application
               # aws-lambda
-              # azure-functions
             ];
 
             # pythonImportsCheck = [ pythonpackage ];
@@ -305,6 +321,8 @@
             licdata-python311;
           licdata-python38 =
             pythoneda-licdata-for {
+              azure-functions =
+                azure-functions.packages.${system}.azure-functions-python38;
               python = pkgs.python38;
               pythoneda-shared-pythonlang-banner =
                 pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python38;
@@ -317,6 +335,8 @@
             };
           licdata-python39 =
             licdata-for {
+              azure-functions =
+                azure-functions.packages.${system}.azure-functions-python39;
               python = pkgs.python39;
               pythoneda-shared-pythonlang-banner =
                 pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python39;
@@ -329,6 +349,8 @@
             };
           licdata-python310 =
             licdata-for {
+              azure-functions =
+                azure-functions.packages.${system}.azure-functions-python310;
               python = pkgs.python310;
               pythoneda-shared-pythonlang-banner =
                 pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python310;
@@ -341,6 +363,8 @@
             };
           licdata-python311 =
             licdata-for {
+              azure-functions =
+                azure-functions.packages.${system}.azure-functions-python311;
               python = pkgs.python311;
               pythoneda-shared-pythonlang-banner =
                 pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python311;

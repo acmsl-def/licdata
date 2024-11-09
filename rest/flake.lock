@@ -1,5 +1,37 @@
 {
   "nodes": {
+    "azure-functions": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixos": [
+          "nixos"
+        ],
+        "pythoneda-shared-pythonlang-banner": [
+          "pythoneda-shared-pythonlang-banner"
+        ],
+        "pythoneda-shared-pythonlang-domain": [
+          "pythoneda-shared-pythonlang-domain"
+        ]
+      },
+      "locked": {
+        "dir": "azure-functions",
+        "lastModified": 1731089699,
+        "narHash": "sha256-H/SxVb6IVHlO2oY8bnxYUJPdnrH13iumW0R/3/7hbcU=",
+        "owner": "rydnr",
+        "repo": "nix-flakes",
+        "rev": "af6dc614d2a722d30200cfb13d6d414492f0f89c",
+        "type": "github"
+      },
+      "original": {
+        "dir": "azure-functions",
+        "owner": "rydnr",
+        "ref": "azure-functions-1.21.3",
+        "repo": "nix-flakes",
+        "type": "github"
+      }
+    },
     "esdbclient": {
       "inputs": {
         "flake-utils": [
@@ -532,6 +564,7 @@
     },
     "root": {
       "inputs": {
+        "azure-functions": "azure-functions",
         "flake-utils": "flake-utils",
         "nixos": "nixos",
         "pythoneda-shared-pythonlang-application": "pythoneda-shared-pythonlang-application",

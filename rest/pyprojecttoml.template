@@ -26,6 +26,9 @@ homepage = "@homepage@"
 packages = [{include = "@package@"}]
 
 [tool.poetry.dependencies]
+azure-functions = "^@azureFunctions@"
+cryptography = "^@cryptography@"
+PyGithub = "^@pygithub@"
 python = "^@pythonMajorMinorVersion@"
 pythoneda-shared-pythonlang-banner = "^@pythonedaSharedPythonlangBanner@"
 pythoneda-shared-pythonlang-domain = "^@pythonedaSharedPythonlangDomain@"
