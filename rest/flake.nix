@@ -28,7 +28,7 @@
         "pythoneda-shared-pythonlang-banner";
       inputs.pythoneda-shared-pythonlang-domain.follows =
         "pythoneda-shared-pythonlang-domain";
-      url = "github:rydnr/nix-flakes/azure-functions-1.21.3?dir=azure-functions";
+      url = "github:rydnr/nix-flakes/0.1.17?dir=azure-functions";
     };
     pythoneda-shared-pythonlang-banner = {
       inputs.nixos.follows = "nixos";
@@ -69,8 +69,8 @@
       let
         org = "acmsl";
         repo = "licdata";
-        version = "0.0.4";
-        sha256 = "05w2r0fzi5fd0h5imjrckd1f390r0kbznaldw3md3r0gdgcwfx4h";
+        version = "0.0.5";
+        sha256 = "1rix1gkk75simrzljimrr6s0ap82axgqkyylh2wjnc8ifjz56z7s";
         pname = "${org}-${repo}";
         pythonpackage = "org.acmsl.licdata";
         package = builtins.replaceStrings [ "." ] [ "/" ] pythonpackage;
@@ -106,8 +106,8 @@
           in python.pkgs.buildPythonPackage rec {
             inherit pname version;
             projectDir = ./.;
-            pyprojectTemplateFile = ./pyprojecttoml.template;
-            pyprojectTemplate = pkgs.substituteAll {
+            pyprojectTomlTemplate = ./templates/pyproject.toml.template;
+            pyprojectToml = pkgs.substituteAll {
               authors = builtins.concatStringsSep ","
                 (map (item: ''"${item}"'') maintainers);
               azureFunctions = azure-functions.version;
@@ -126,7 +126,18 @@
                 pythoneda-shared-pythonlang-infrastructure.version;
               pythonedaSharedPythonlangApplication =
                 pythoneda-shared-pythonlang-application.version;
-              src = pyprojectTemplateFile;
+              src = pyprojectTomlTemplate;
+            };
+            requirementsTxtTemplate = ./templates/requirements.txt.template;
+            requirementsTxt = pkgs.substituteAll {
+              authors = builtins.concatStringsSep ","
+                (map (item: ''"${item}"'') maintainers);
+              azureFunctions = azure-functions.version;
+              cryptography = python.pkgs.cryptography.version;
+              desc = description;
+              # emails = python.pkgs.emails.version;
+              pygithub = python.pkgs.pygithub.version;
+              src = requirementsTxtTemplate;
             };
             bannerTemplateFile = ./templates/banner.py.template;
             bannerTemplate = pkgs.substituteAll {
@@ -185,11 +196,12 @@
               sourceRoot=$(ls | grep -v env-vars)
               chmod +w $sourceRoot
               find $sourceRoot -type d -exec chmod 777 {} \;
-              cp ${pyprojectTemplate} $sourceRoot/pyproject.toml
+              cp ${pyprojectToml} $sourceRoot/pyproject.toml
+              cp ${requirementsTxt} $sourceRoot/requirements.txt
               cp ${bannerTemplate} $sourceRoot/${banner_file}
               cp ${entrypointTemplate} $sourceRoot/entrypoint.sh
               pushd $sourceRoot
-              zip -r rest.zip org
+              zip -r rest.zip org CreateClient
               popd
             '';
 
@@ -206,22 +218,23 @@
             '';
 
             postInstall = ''
-              pushd /build/$sourceRoot
-              for f in $(find . -name '__init__.py'); do
+              command pushd /build/$sourceRoot
+              for f in $(command find . -name '__init__.py' | grep -v '.deps' | sed 's ^\./  g'); do
                 if [[ ! -e $out/lib/python${pythonMajorMinorVersion}/site-packages/$f ]]; then
-                  cp $f $out/lib/python${pythonMajorMinorVersion}/site-packages/$f;
+                  command mkdir -p $out/lib/python${pythonMajorMinorVersion}/site-packages/"$(command dirname $f)";
+                  command cp -r "$(command dirname $f)"/* $out/lib/python${pythonMajorMinorVersion}/site-packages/"$(command dirname $f)";
                 fi
               done
-              popd
-              mkdir $out/dist $out/bin
-              cp dist/${wheelName} /build/$sourceRoot/rest.zip $out/dist
-              cp /build/$sourceRoot/entrypoint.sh $out/bin/${entrypoint}.sh
-              chmod +x $out/bin/${entrypoint}.sh
-              echo '#!/usr/bin/env sh' > $out/bin/banner.sh
-              echo "export PYTHONPATH=$PYTHONPATH" >> $out/bin/banner.sh
-              echo "echo 'Running $out/bin/banner'" >> $out/bin/banner.sh
-              echo "${python}/bin/python $out/lib/python${pythonMajorMinorVersion}/site-packages/${banner_file} \$@" >> $out/bin/banner.sh
-              chmod +x $out/bin/banner.sh
+              command popd
+              command mkdir $out/dist $out/bin
+              command cp dist/${wheelName} /build/$sourceRoot/rest.zip $out/dist
+              command cp /build/$sourceRoot/entrypoint.sh $out/bin/${entrypoint}.sh
+              command chmod +x $out/bin/${entrypoint}.sh
+              command echo '#!/usr/bin/env sh' > $out/bin/banner.sh
+              command echo "export PYTHONPATH=$PYTHONPATH" >> $out/bin/banner.sh
+              command echo "command echo 'Running $out/bin/banner'" >> $out/bin/banner.sh
+              command echo "${python}/bin/python $out/lib/python${pythonMajorMinorVersion}/site-packages/${banner_file} \$@" >> $out/bin/banner.sh
+              command chmod +x $out/bin/banner.sh
             '';
 
             meta = with pkgs.lib; {
@@ -231,8 +244,7 @@
       in rec {
         apps = rec {
           default = licdata-default;
-          licdata-default =
-            licdata-python311;
+          licdata-default = licdata-python311;
           licdata-python38 = shared.app-for {
             package =
               self.packages.${system}.licdata-python38;
@@ -317,8 +329,7 @@
         };
         packages = rec {
           default = licdata-default;
-          licdata-default =
-            licdata-python311;
+          licdata-default = licdata-python311;
           licdata-python38 =
             pythoneda-licdata-for {
               azure-functions =
