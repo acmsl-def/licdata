@@ -1,3 +1,11 @@
 azure-functions==@azureFunctions@
+bcrypt==@bcrypt@
 cryptography==@cryptography@
+dbus_next==@dbusNext@
+GitPython==@gitpython@
+packaging==@packaging@
+paramiko==@paramiko@
+path==@path@
 PyGithub==@pygithub@
+semver==@semver@
+unidiff==@unidiff@

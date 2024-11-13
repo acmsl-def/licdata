@@ -28,7 +28,7 @@
         "pythoneda-shared-pythonlang-banner";
       inputs.pythoneda-shared-pythonlang-domain.follows =
         "pythoneda-shared-pythonlang-domain";
-      url = "github:rydnr/nix-flakes/0.1.17?dir=azure-functions";
+      url = "github:rydnr/nix-flakes/azure-functions-1.21.3?dir=azure-functions";
     };
     pythoneda-shared-pythonlang-banner = {
       inputs.nixos.follows = "nixos";
@@ -40,7 +40,7 @@
       inputs.nixos.follows = "nixos";
       inputs.pythoneda-shared-pythonlang-banner.follows =
         "pythoneda-shared-pythonlang-banner";
-      url = "github:pythoneda-shared-pythonlang-def/domain/0.0.53";
+      url = "github:pythoneda-shared-pythonlang-def/domain/0.0.54";
     };
     pythoneda-shared-pythonlang-infrastructure = {
       inputs.flake-utils.follows = "flake-utils";
@@ -49,7 +49,7 @@
         "pythoneda-shared-pythonlang-banner";
       inputs.pythoneda-shared-pythonlang-domain.follows =
         "pythoneda-shared-pythonlang-domain";
-      url = "github:pythoneda-shared-pythonlang-def/infrastructure/0.0.40";
+      url = "github:pythoneda-shared-pythonlang-def/infrastructure/0.0.41";
     };
     pythoneda-shared-pythonlang-application = {
       inputs.flake-utils.follows = "flake-utils";
@@ -60,7 +60,7 @@
         "pythoneda-shared-pythonlang-domain";
       inputs.pythoneda-shared-pythonlang-infrastructure.follows =
         "pythoneda-shared-pythonlang-infrastructure";
-      url = "github:pythoneda-shared-pythonlang-def/application/0.0.67";
+      url = "github:pythoneda-shared-pythonlang-def/application/0.0.69";
     };
   };
   outputs = inputs:
@@ -69,8 +69,8 @@
       let
         org = "acmsl";
         repo = "licdata";
-        version = "0.0.5";
-        sha256 = "1rix1gkk75simrzljimrr6s0ap82axgqkyylh2wjnc8ifjz56z7s";
+        version = "0.0.6";
+        sha256 = "1nww72j0nz12x3s8w4hnzbwr9smr9wjqqcahi7kxr8f90fpz9iqx";
         pname = "${org}-${repo}";
         pythonpackage = "org.acmsl.licdata";
         package = builtins.replaceStrings [ "." ] [ "/" ] pythonpackage;
@@ -133,11 +133,19 @@
               authors = builtins.concatStringsSep ","
                 (map (item: ''"${item}"'') maintainers);
               azureFunctions = azure-functions.version;
+              bcrypt = python.pkgs.bcrypt.version;
               cryptography = python.pkgs.cryptography.version;
+              dbusNext = python.pkgs.dbus-next.version;
               desc = description;
               # emails = python.pkgs.emails.version;
+              gitpython = python.pkgs.gitpython.version;
+              packaging = python.pkgs.packaging.version;
+              paramiko = python.pkgs.paramiko.version;
+              path = python.pkgs.path.version;
               pygithub = python.pkgs.pygithub.version;
+              semver = python.pkgs.semver.version;
               src = requirementsTxtTemplate;
+              unidiff = python.pkgs.unidiff.version;
             };
             bannerTemplateFile = ./templates/banner.py.template;
             bannerTemplate = pkgs.substituteAll {
@@ -179,6 +187,7 @@
             nativeBuildInputs = with python.pkgs; [ pip poetry-core ] ++ [ pkgs.zip ];
             propagatedBuildInputs = with python.pkgs; [
               azure-functions
+              bcrypt
               cryptography
               # emails
               PyGithub
@@ -227,7 +236,7 @@
               done
               command popd
               command mkdir $out/dist $out/bin
-              command cp dist/${wheelName} /build/$sourceRoot/rest.zip $out/dist
+              command cp dist/${wheelName} /build/$sourceRoot/rest.zip /build/$sourceRoot/requirements.txt $out/dist
               command cp /build/$sourceRoot/entrypoint.sh $out/bin/${entrypoint}.sh
               command chmod +x $out/bin/${entrypoint}.sh
               command echo '#!/usr/bin/env sh' > $out/bin/banner.sh
@@ -235,6 +244,8 @@
               command echo "command echo 'Running $out/bin/banner'" >> $out/bin/banner.sh
               command echo "${python}/bin/python $out/lib/python${pythonMajorMinorVersion}/site-packages/${banner_file} \$@" >> $out/bin/banner.sh
               command chmod +x $out/bin/banner.sh
+              pip freeze | grep -v 'acmsl' | grep -v 'pythoneda' | grep -v 'rydnr' | grep -v 'stringtemplate3' > requirements-new.txt
+              cp requirements-new.txt $out/dist
             '';
 
             meta = with pkgs.lib; {
