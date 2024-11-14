@@ -128,25 +128,6 @@
                 pythoneda-shared-pythonlang-application.version;
               src = pyprojectTomlTemplate;
             };
-            requirementsTxtTemplate = ./templates/requirements.txt.template;
-            requirementsTxt = pkgs.substituteAll {
-              authors = builtins.concatStringsSep ","
-                (map (item: ''"${item}"'') maintainers);
-              azureFunctions = azure-functions.version;
-              bcrypt = python.pkgs.bcrypt.version;
-              cryptography = python.pkgs.cryptography.version;
-              dbusNext = python.pkgs.dbus-next.version;
-              desc = description;
-              # emails = python.pkgs.emails.version;
-              gitpython = python.pkgs.gitpython.version;
-              packaging = python.pkgs.packaging.version;
-              paramiko = python.pkgs.paramiko.version;
-              path = python.pkgs.path.version;
-              pygithub = python.pkgs.pygithub.version;
-              semver = python.pkgs.semver.version;
-              src = requirementsTxtTemplate;
-              unidiff = python.pkgs.unidiff.version;
-            };
             bannerTemplateFile = ./templates/banner.py.template;
             bannerTemplate = pkgs.substituteAll {
               project_name = pname;
@@ -187,8 +168,6 @@
             nativeBuildInputs = with python.pkgs; [ pip poetry-core ] ++ [ pkgs.zip ];
             propagatedBuildInputs = with python.pkgs; [
               azure-functions
-              bcrypt
-              cryptography
               # emails
               PyGithub
               pythoneda-shared-pythonlang-banner
@@ -206,7 +185,6 @@
               chmod +w $sourceRoot
               find $sourceRoot -type d -exec chmod 777 {} \;
               cp ${pyprojectToml} $sourceRoot/pyproject.toml
-              cp ${requirementsTxt} $sourceRoot/requirements.txt
               cp ${bannerTemplate} $sourceRoot/${banner_file}
               cp ${entrypointTemplate} $sourceRoot/entrypoint.sh
               pushd $sourceRoot
@@ -236,6 +214,7 @@
               done
               command popd
               command mkdir $out/dist $out/bin
+              pip freeze | grep -v 'acmsl' | grep -v 'pythoneda' | grep -v 'rydnr' | grep -v 'stringtemplate3' | grep -v 'smmap' > /build/$sourceRoot/requirements.txt
               command cp dist/${wheelName} /build/$sourceRoot/rest.zip /build/$sourceRoot/requirements.txt $out/dist
               command cp /build/$sourceRoot/entrypoint.sh $out/bin/${entrypoint}.sh
               command chmod +x $out/bin/${entrypoint}.sh
@@ -244,8 +223,6 @@
               command echo "command echo 'Running $out/bin/banner'" >> $out/bin/banner.sh
               command echo "${python}/bin/python $out/lib/python${pythonMajorMinorVersion}/site-packages/${banner_file} \$@" >> $out/bin/banner.sh
               command chmod +x $out/bin/banner.sh
-              pip freeze | grep -v 'acmsl' | grep -v 'pythoneda' | grep -v 'rydnr' | grep -v 'stringtemplate3' > requirements-new.txt
-              cp requirements-new.txt $out/dist
             '';
 
             meta = with pkgs.lib; {
