@@ -33,14 +33,14 @@
     pythoneda-shared-pythonlang-banner = {
       inputs.nixos.follows = "nixos";
       inputs.flake-utils.follows = "flake-utils";
-      url = "github:pythoneda-shared-pythonlang-def/banner/0.0.56";
+      url = "github:pythoneda-shared-pythonlang-def/banner/0.0.57";
     };
     pythoneda-shared-pythonlang-domain = {
       inputs.flake-utils.follows = "flake-utils";
       inputs.nixos.follows = "nixos";
       inputs.pythoneda-shared-pythonlang-banner.follows =
         "pythoneda-shared-pythonlang-banner";
-      url = "github:pythoneda-shared-pythonlang-def/domain/0.0.54";
+      url = "github:pythoneda-shared-pythonlang-def/domain/0.0.56";
     };
     pythoneda-shared-pythonlang-infrastructure = {
       inputs.flake-utils.follows = "flake-utils";
@@ -49,7 +49,7 @@
         "pythoneda-shared-pythonlang-banner";
       inputs.pythoneda-shared-pythonlang-domain.follows =
         "pythoneda-shared-pythonlang-domain";
-      url = "github:pythoneda-shared-pythonlang-def/infrastructure/0.0.41";
+      url = "github:pythoneda-shared-pythonlang-def/infrastructure/0.0.42";
     };
     pythoneda-shared-pythonlang-application = {
       inputs.flake-utils.follows = "flake-utils";
@@ -60,7 +60,7 @@
         "pythoneda-shared-pythonlang-domain";
       inputs.pythoneda-shared-pythonlang-infrastructure.follows =
         "pythoneda-shared-pythonlang-infrastructure";
-      url = "github:pythoneda-shared-pythonlang-def/application/0.0.69";
+      url = "github:pythoneda-shared-pythonlang-def/application/0.0.70";
     };
   };
   outputs = inputs:
@@ -232,7 +232,7 @@
       in rec {
         apps = rec {
           default = licdata-default;
-          licdata-default = licdata-python311;
+          licdata-default = licdata-python312;
           licdata-python38 = shared.app-for {
             package =
               self.packages.${system}.licdata-python38;
@@ -253,12 +253,17 @@
               self.packages.${system}.licdata-python311;
             inherit entrypoint;
           };
+          licdata-python312 = shared.app-for {
+            package =
+              self.packages.${system}.licdata-python312;
+            inherit entrypoint;
+          };
         };
         defaultApp = apps.default;
         defaultPackage = packages.default;
         devShells = rec {
           default = licdata-default;
-          licdata-default = licdata-python311;
+          licdata-default = licdata-python312;
           licdata-python38 =
             shared.devShell-for {
               banner = "${packages.licdata-python38}/bin/banner.sh";
@@ -314,10 +319,24 @@
                 pythoneda-shared-pythonlang-domain.packages.${system}.pythoneda-shared-pythonlang-domain-python311;
               inherit archRole layer org pkgs repo space;
             };
+          licdata-python312 =
+            shared.devShell-for {
+              banner = "${packages.licdata-python312}/bin/banner.sh";
+              extra-namespaces = "org";
+              nixpkgs-release = nixpkgsRelease;
+              package =
+                packages.licdata-python312;
+              python = pkgs.python312;
+              pythoneda-shared-pythonlang-banner =
+                pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python312;
+              pythoneda-shared-pythonlang-domain =
+                pythoneda-shared-pythonlang-domain.packages.${system}.pythoneda-shared-pythonlang-domain-python312;
+              inherit archRole layer org pkgs repo space;
+            };
         };
         packages = rec {
           default = licdata-default;
-          licdata-default = licdata-python311;
+          licdata-default = licdata-python312;
           licdata-python38 =
             pythoneda-licdata-for {
               azure-functions =
@@ -373,6 +392,20 @@
                 pythoneda-shared-pythonlang-infrastructure.packages.${system}.pythoneda-shared-pythonlang-infrastructure-python311;
               pythoneda-shared-pythonlang-application =
                 pythoneda-shared-pythonlang-application.packages.${system}.pythoneda-shared-pythonlang-application-python311;
+            };
+          licdata-python312 =
+            licdata-for {
+              azure-functions =
+                azure-functions.packages.${system}.azure-functions-python312;
+              python = pkgs.python312;
+              pythoneda-shared-pythonlang-banner =
+                pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python312;
+              pythoneda-shared-pythonlang-domain =
+                pythoneda-shared-pythonlang-domain.packages.${system}.pythoneda-shared-pythonlang-domain-python312;
+              pythoneda-shared-pythonlang-infrastructure =
+                pythoneda-shared-pythonlang-infrastructure.packages.${system}.pythoneda-shared-pythonlang-infrastructure-python312;
+              pythoneda-shared-pythonlang-application =
+                pythoneda-shared-pythonlang-application.packages.${system}.pythoneda-shared-pythonlang-application-python312;
             };
         };
       });
