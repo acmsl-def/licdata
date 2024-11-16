@@ -28,7 +28,7 @@
         "pythoneda-shared-pythonlang-banner";
       inputs.pythoneda-shared-pythonlang-domain.follows =
         "pythoneda-shared-pythonlang-domain";
-      url = "github:rydnr/nix-flakes/azure-functions-1.21.3b?dir=azure-functions";
+      url = "github:rydnr/nix-flakes/azure-functions-1.21.3c?dir=azure-functions";
     };
     pythoneda-shared-pythonlang-banner = {
       inputs.nixos.follows = "nixos";
@@ -49,7 +49,7 @@
         "pythoneda-shared-pythonlang-banner";
       inputs.pythoneda-shared-pythonlang-domain.follows =
         "pythoneda-shared-pythonlang-domain";
-      url = "github:pythoneda-shared-pythonlang-def/infrastructure/0.0.42";
+      url = "github:pythoneda-shared-pythonlang-def/infrastructure/0.0.43";
     };
     pythoneda-shared-pythonlang-application = {
       inputs.flake-utils.follows = "flake-utils";
@@ -60,7 +60,7 @@
         "pythoneda-shared-pythonlang-domain";
       inputs.pythoneda-shared-pythonlang-infrastructure.follows =
         "pythoneda-shared-pythonlang-infrastructure";
-      url = "github:pythoneda-shared-pythonlang-def/application/0.0.70";
+      url = "github:pythoneda-shared-pythonlang-def/application/0.0.73";
     };
   };
   outputs = inputs:
