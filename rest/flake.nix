@@ -28,7 +28,7 @@
         "pythoneda-shared-pythonlang-banner";
       inputs.pythoneda-shared-pythonlang-domain.follows =
         "pythoneda-shared-pythonlang-domain";
-      url = "github:rydnr/nix-flakes/azure-functions-1.21.3?dir=azure-functions";
+      url = "github:rydnr/nix-flakes/azure-functions-1.21.3b?dir=azure-functions";
     };
     pythoneda-shared-pythonlang-banner = {
       inputs.nixos.follows = "nixos";

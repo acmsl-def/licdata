@@ -7,20 +7,28 @@
         ],
         "nixos": [
           "nixos"
+        ],
+        "pythoneda-shared-pythonlang-banner": [
+          "pythoneda-shared-pythonlang-banner"
+        ],
+        "pythoneda-shared-pythonlang-domain": [
+          "pythoneda-shared-pythonlang-domain"
         ]
       },
       "locked": {
-        "lastModified": 1731668408,
-        "narHash": "sha256-oCzYR2e8hCD9nvjbg1rKHyfZf6t/n75fPYwSiZPZG94=",
-        "owner": "pythoneda-shared-pythonlang-def",
-        "repo": "banner",
-        "rev": "a68e4aebbe346d7514ae23d9bd743626854a46ac",
+        "dir": "azure-functions",
+        "lastModified": 1731701353,
+        "narHash": "sha256-+D/0MaF8hfAeN+PQMXzf6CJSxmPTScLJ8WuB7zwZnbc=",
+        "owner": "rydnr",
+        "repo": "nix-flakes",
+        "rev": "a6b108d8e9ec6fa2622be4f6220522a00d09f0cc",
         "type": "github"
       },
       "original": {
-        "owner": "pythoneda-shared-pythonlang-def",
-        "ref": "0.0.57",
-        "repo": "banner",
+        "dir": "azure-functions",
+        "owner": "rydnr",
+        "ref": "azure-functions-1.21.3b",
+        "repo": "nix-flakes",
         "type": "github"
       }
     },
