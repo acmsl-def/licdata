@@ -214,8 +214,8 @@
               done
               command popd
               command mkdir $out/dist $out/bin
-              pip freeze | grep -v 'acmsl' | grep -v 'pythoneda' | grep -v 'rydnr' | grep -v 'stringtemplate3' | grep -v 'smmap' > /build/$sourceRoot/requirements.txt
-              command cp dist/${wheelName} /build/$sourceRoot/rest.zip /build/$sourceRoot/requirements.txt $out/dist
+              command pip freeze | grep -v 'acmsl' | grep -v 'pythoneda' | grep -v 'rydnr' | grep -v 'stringtemplate3' | grep -v 'smmap' > /build/$sourceRoot/requirements.txt
+              command cp dist/${wheelName} /build/$sourceRoot/rest.zip /build/$sourceRoot/requirements.txt /build/$sourceRoot/Dockerfile $out/dist
               command cp /build/$sourceRoot/entrypoint.sh $out/bin/${entrypoint}.sh
               command chmod +x $out/bin/${entrypoint}.sh
               command echo '#!/usr/bin/env sh' > $out/bin/banner.sh
