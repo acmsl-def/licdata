@@ -1,4 +1,4 @@
-# rest/flake.nix
+# flake.nix
 #
 # This file packages licdata as a Nix flake.
 #
@@ -114,7 +114,7 @@
               cryptography = python.pkgs.cryptography.version;
               desc = description;
               # emails = python.pkgs.emails.version;
-              inherit homepage pname pythonMajorMinorVersion pythonpackage
+              inherit homepage pname pythonMajorMinorVersion package
                 version;
               package = builtins.replaceStrings [ "." ] [ "/" ] pythonpackage;
               pygithub = python.pkgs.pygithub.version;
