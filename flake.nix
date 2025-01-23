@@ -19,8 +19,6 @@
 {
   description = "Licdata";
   inputs = rec {
-    nixpkgs.url = "github:NixOS/nixpkgs/24.05";
-    flake-utils.url = "github:numtide/flake-utils/v1.0.0";
     azure-functions = {
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
@@ -28,19 +26,21 @@
         "pythoneda-shared-pythonlang-banner";
       inputs.pythoneda-shared-pythonlang-domain.follows =
         "pythoneda-shared-pythonlang-domain";
-      url = "github:rydnr/nix-flakes/azure-functions-1.21.3c?dir=azure-functions";
+      url = "github:rydnr/nix-flakes/azure-functions-1.21.3.3?dir=azure-functions";
     };
+    flake-utils.url = "github:numtide/flake-utils/v1.0.0";
+    nixpkgs.url = "github:NixOS/nixpkgs/release-24.11";
     pythoneda-shared-pythonlang-banner = {
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
-      url = "github:pythoneda-shared-pythonlang-def/banner/0.0.62";
+      url = "github:pythoneda-shared-pythonlang-def/banner/0.0.83";
     };
     pythoneda-shared-pythonlang-domain = {
       inputs.flake-utils.follows = "flake-utils";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.pythoneda-shared-pythonlang-banner.follows =
         "pythoneda-shared-pythonlang-banner";
-      url = "github:pythoneda-shared-pythonlang-def/domain/0.0.75";
+      url = "github:pythoneda-shared-pythonlang-def/domain/0.0.123";
     };
     pythoneda-shared-pythonlang-infrastructure = {
       inputs.flake-utils.follows = "flake-utils";
@@ -49,7 +49,7 @@
         "pythoneda-shared-pythonlang-banner";
       inputs.pythoneda-shared-pythonlang-domain.follows =
         "pythoneda-shared-pythonlang-domain";
-      url = "github:pythoneda-shared-pythonlang-def/infrastructure/0.0.54";
+      url = "github:pythoneda-shared-pythonlang-def/infrastructure/0.0.96";
     };
     pythoneda-shared-pythonlang-application = {
       inputs.flake-utils.follows = "flake-utils";
@@ -60,7 +60,7 @@
         "pythoneda-shared-pythonlang-domain";
       inputs.pythoneda-shared-pythonlang-infrastructure.follows =
         "pythoneda-shared-pythonlang-infrastructure";
-      url = "github:pythoneda-shared-pythonlang-def/application/0.0.75";
+      url = "github:pythoneda-shared-pythonlang-def/application/0.0.116";
     };
   };
   outputs = inputs:
@@ -116,7 +116,6 @@
               # emails = python.pkgs.emails.version;
               inherit homepage pname pythonMajorMinorVersion package
                 version;
-              package = builtins.replaceStrings [ "." ] [ "/" ] pythonpackage;
               pygithub = python.pkgs.pygithub.version;
               pythonedaSharedPythonlangBanner =
                 pythoneda-shared-pythonlang-banner.version;
@@ -204,7 +203,7 @@
                 --replace "@BANNER@" "$out/bin/banner.sh"
             '';
 
-            postInstall = ''
+            postInstall = with python.pkgs; ''
               command pushd /build/$sourceRoot
               for f in $(command find . -name '__init__.py' | grep -v '.deps' | sed 's ^\./  g'); do
                 if [[ ! -e $out/lib/python${pythonMajorMinorVersion}/site-packages/$f ]]; then
@@ -223,6 +222,22 @@
               command echo "command echo 'Running $out/bin/banner'" >> $out/bin/banner.sh
               command echo "${python}/bin/python $out/lib/python${pythonMajorMinorVersion}/site-packages/${banner_file} \$@" >> $out/bin/banner.sh
               command chmod +x $out/bin/banner.sh
+              for dep in ${azure-functions} ${pythoneda-shared-pythonlang-banner} ${pythoneda-shared-pythonlang-domain} ${pythoneda-shared-pythonlang-infrastructure} ${pythoneda-shared-pythonlang-application}; do
+                command cp -r $dep/dist/* $out/deps || true
+                if [ -e $dep/deps ]; then
+                  command cp -r $dep/deps/* $out/deps || true
+                fi
+                METADATA=$dep/lib/python${pythonMajorMinorVersion}/site-packages/*.dist-info/METADATA
+                NAME="$(command grep -m 1 '^Name: ' $METADATA | command cut -d ' ' -f 2)"
+                VERSION="$(command grep -m 1 '^Version: ' $METADATA | command cut -d ' ' -f 2)"
+                command ln -s $dep $out/deps/flakes/$NAME-$VERSION || true
+              done
+              for nixpkgsDep in ${PyGithub}; do
+                METADATA=$nixpkgsDep/lib/python${pythonMajorMinorVersion}/site-packages/*.dist-info/METADATA
+                NAME="$(command grep -m 1 '^Name: ' $METADATA | command cut -d ' ' -f 2)"
+                VERSION="$(command grep -m 1 '^Version: ' $METADATA | command cut -d ' ' -f 2)"
+                command ln -s $nixpkgsDep $out/deps/nixpkgs/$NAME-$VERSION || true
+              done
             '';
 
             meta = with pkgs.lib; {
